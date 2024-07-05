@@ -11,7 +11,7 @@ with open(f"{BASE_DIR}/api_key.txt","r") as f:
     for line in f:
         apikey=line
 
-API_KEY = apikey
+API_KEY = apikey.rstrip()
 BASE_URL = "https://api.unsplash.com/photos/random"
 WALLPAPER_PATH = "/home/seb/Pictures/Wallpapers"
 MONITORS = ("rightmon","leftmon")

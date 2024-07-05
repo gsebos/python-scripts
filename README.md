@@ -3,7 +3,7 @@
 A quick script to get a random unsplash picture as wallpaper in linux (wayland).
 
 clone the repo:
-git clone https://github.com/gsebos/python-scripts.git
+`git clone https://github.com/gsebos/python-scripts.git`
 then cd into it
 
 ## For use with swaybg - unsplashwallpaper.py -(1 monitor)
@@ -16,7 +16,7 @@ then cd into it
 
 run script in command line or bind keys in your DE/WM.
 
-## For use with wpaperd (2 or more monitors)
+## For use with wpaperd - unsplashwallpaperwpaperd.py - (2 or more monitors)
 
 1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
 2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 

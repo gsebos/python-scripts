@@ -6,6 +6,7 @@ import subprocess
 import os
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+USER = os.getlogin()
 
 with open(f"{BASE_DIR}/api_key.txt","r") as f:
     for line in f:
@@ -13,7 +14,7 @@ with open(f"{BASE_DIR}/api_key.txt","r") as f:
 
 API_KEY = apikey.rstrip()
 BASE_URL = "https://api.unsplash.com/photos/random"
-WALLPAPER_PATH = "/home/seb/Pictures/Wallpapers/unsplash"
+WALLPAPER_PATH = f"/home/{USER}/Pictures/Wallpapers/unsplash"
 
 UNSPLASH_PARAMS = {
     "client_id" : API_KEY,

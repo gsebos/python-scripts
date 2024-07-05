@@ -5,6 +5,7 @@ import json
 import subprocess
 import os
 
+USER = os.getlogin()
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 with open(f"{BASE_DIR}/api_key.txt","r") as f:
@@ -13,14 +14,14 @@ with open(f"{BASE_DIR}/api_key.txt","r") as f:
 
 API_KEY = apikey.rstrip()
 BASE_URL = "https://api.unsplash.com/photos/random"
-WALLPAPER_PATH = "/home/seb/Pictures/Wallpapers"
-MONITORS = ("rightmon","leftmon")
+WALLPAPER_PATH = f"/home/{USER}/Pictures/Wallpapers"
+MONITORS_FOLDER = ("rightmon","leftmon")
 UNSPLASH_PARAMS = {
         "client_id" : API_KEY,
         "collections" : "1053828"
     }
 
-for mon in MONITORS:
+for mon in MONITORS_FOLDER:
     request = requests.get(BASE_URL,params=UNSPLASH_PARAMS)
     print(request)
     jsonrequest = json.loads(request.content)

@@ -57,7 +57,7 @@ apply-shadow = true
 
 run script in command line or bind keys in your DE/WM.
 
-### ~Adding more monitors~ TAKEN OUT MOMENTARILY
+### ~Adding more monitors~ CONTENT BELOW TAKEN OUT MOMENTARILY
 
 1. Create a folder for the extra monitor inside `~/Pictures/Wallpapers`, here called `your_extra_monitor` for example
 2. Add the folder name to the variable MONITORS_FOLDER (e.g. `MONITORS_FOLDER = ("rightmon","leftmon","your_extra_monitor")`)

@@ -20,7 +20,7 @@ run script in command line or bind keys in your DE/WM.
 
 1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
 2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 
-3. Install `wpaperd` using your package manager 
+3. Install `wpaperd` (wayland) and/or `feh` (X11) using your package manager 
 4. Install the python module `requests` using `pip` [in a venv](https://docs.python.org/3/library/venv.html) or with your preferred method
 5. Make sure that you have the following folder structure `/home/{USER}/Pictures/Wallpapers` and add a `rightmon` and a `leftmon` folder.
 In other words, you should have these two folders:

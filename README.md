@@ -16,7 +16,7 @@ then cd into it
 
 run script in command line or bind keys in your DE/WM.
 
-## For use with wpaperd/feh - unsplas-hwallpaper-dual.py - (2 ~or more monitors~)
+## For use with wpaperd/feh - unsplas-hwallpaper-dual.py - (2 ~or more~ monitors)
 
 1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
 2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 

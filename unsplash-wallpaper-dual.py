@@ -85,8 +85,13 @@ class WallpaperManager:
             wallpapercmd.append(mon)
 
         if self.is_session_wayland():
-                subprocess.run(["pkill",args.waylandsetter])
-                subprocess.run([args.waylandsetter])
+            settercmd = []
+            if args.waylandsetter == "swaybg":
+                settercmd = [args.waylandsetter,"-i",f"{mon}/wallpaper.jpg"]
+            else:
+                settercmd = [args.waylandsetter]  
+            subprocess.run(["pkill",args.waylandsetter])
+            subprocess.run([*settercmd])
         else:
             subprocess.run(["pkill","feh"])
             subprocess.run(["feh", *wallpapercmd])
@@ -108,8 +113,9 @@ class wpaperdConfig:
         return self.config
 
     def save_config(self):
-        with open(self.CONFIG_PATH,'w') as f:
-                f.writelines(self.create_config())
+        if os.path.exists(self.CONFIG_PATH):
+            with open(self.CONFIG_PATH,'w') as f:
+                    f.writelines(self.create_config())
         
 
 def main():

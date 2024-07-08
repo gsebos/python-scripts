@@ -1,6 +1,6 @@
 # Random Unsplash wallpaper on demand
 
-A quick script to get a random unsplash picture as wallpaper in linux (wayland).
+A quick script to get a random unsplash picture as wallpaper in linux. This uses feh for X11 and wpaperd for wayland so these two programmes need to be installed on the system for this to work.
 
 clone the repo:
 `git clone https://github.com/gsebos/python-scripts.git`
@@ -16,18 +16,18 @@ then cd into it
 
 run script in command line or bind keys in your DE/WM.
 
-## For use with wpaperd - unsplashwallpaperwpaperd.py - (2 or more monitors)
+## For use with wpaperd/feh - unsplas-hwallpaper-dual.py - (2 ~or more~ monitors)
 
 1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
 2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 
-3. Install `wpaperd` using your package manager 
+3. Install `wpaperd` (wayland) and/or `feh` (X11) using your package manager 
 4. Install the python module `requests` using `pip` [in a venv](https://docs.python.org/3/library/venv.html) or with your preferred method
 5. Make sure that you have the following folder structure `/home/{USER}/Pictures/Wallpapers` and add a `rightmon` and a `leftmon` folder.
 In other words, you should have these two folders:
 - `/home/{USER}/Pictures/Wallpapers/rightmon`  
 - `/home/{USER}/Pictures/Wallpapers/leftmon`
 
-### wpaperd configuration
+### wpaperd configuration (Feh shoud not require any configuration to work with this script)
 
 Edit the wpaperd configuration at `~/.config/wpaperd/wallpaper.toml` as below
 - replace `your_user_name` with your actual user name
@@ -57,7 +57,7 @@ apply-shadow = true
 
 run script in command line or bind keys in your DE/WM.
 
-### Adding more monitors
+### ~Adding more monitors~ CONTENT BELOW TAKEN OUT MOMENTARILY
 
 1. Create a folder for the extra monitor inside `~/Pictures/Wallpapers`, here called `your_extra_monitor` for example
 2. Add the folder name to the variable MONITORS_FOLDER (e.g. `MONITORS_FOLDER = ("rightmon","leftmon","your_extra_monitor")`)

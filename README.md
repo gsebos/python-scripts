@@ -1,72 +1,46 @@
 # Random Unsplash wallpaper on demand
 
-A quick script to get a random unsplash picture as wallpaper in linux. This uses feh for X11 and wpaperd for wayland so these two programmes need to be installed on the system for this to work.
+## **Caution**
+**This script overwrites `~/.config/wpaperd/wallpaper.toml`
+If you have an exisiting wpaperd configuration, back it up!**
 
-clone the repo:
-`git clone https://github.com/gsebos/python-scripts.git`
-then cd into it
+A quick script to set a random unsplash picture as wallpaper for each of your monitors in linux. It uses feh for X11 and wpaperd (default) or swaybg (with option) for wayland so these programmes need to be installed on the system for this to work (see installation).
 
-## For use with swaybg - unsplashwallpaper.py -(1 monitor)
 
+# Installation
 1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
 2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 
-3. Install `swaybg` using your package manager 
-4. Install the python module `requests` using `pip` [in a venv](https://docs.python.org/3/library/venv.html) or with your preferred method
-5. Make sure that you have the following folder structure `/home/{USER}/Pictures/Wallpapers/unsplash` or change the variable `WALLPAPER_PATH` (no trailing `/` at the end) if you want to store your wallpaper somewhere else.
-
-run script in command line or bind keys in your DE/WM.
-
-## For use with wpaperd/feh - unsplas-hwallpaper-dual.py - (2 ~or more~ monitors)
-
-1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
-2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 
-3. Install `wpaperd` (wayland) and/or `feh` (X11) using your package manager 
-4. Install the python module `requests` using `pip` [in a venv](https://docs.python.org/3/library/venv.html) or with your preferred method
-5. Make sure that you have the following folder structure `/home/{USER}/Pictures/Wallpapers` and add a `rightmon` and a `leftmon` folder.
-In other words, you should have these two folders:
-- `/home/{USER}/Pictures/Wallpapers/rightmon`  
-- `/home/{USER}/Pictures/Wallpapers/leftmon`
-
-### wpaperd configuration (Feh shoud not require any configuration to work with this script)
-
-Edit the wpaperd configuration at `~/.config/wpaperd/wallpaper.toml` as below
-- replace `your_user_name` with your actual user name
-- change the monitor headers to your own
-
+3. Install `swaybg` (used with option) or `wpaperd` (used by default) using your package manager
+4. Install `feh` and `xrandr` with your package manager (even if using wayland)
+5. Install the python module `requests` using `pip` [in a venv](https://docs.python.org/3/library/venv.html):
+Installing in a venv (run commands one by one)
 ```
-# To set fallback wallpapers
-[default] 
-path = "/home/seb/Pictures/Wallpapers/"
-duration = "30m"
-sorting = "ascending"
+python -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install requests
+```
+# Other Requirements
+- You need a folder structure like `~/Pictures/Wallpapers` as the script will create folders (formatted like `uws_mon[0-9]`) there to save the wallpaper images.
+- If using wpaperd, check that your config file is read from `~/.config/wpaperd/wallpaper.toml` The script will detect your monitors and will ovewrite this file so **if you have an exisiting wpaperd config, back it up!**
 
-# Check your WM or DE on how to check monitor id
-[DP-2]
-path = "/home/your_user_name/Pictures/Wallpapers/rightmon"
-duration = "30m"
-sorting = "descending"
-apply-shadow = true
-
-[HDMI-A-1]
-path = "/home/your_user_name/Pictures/Wallpapers/leftmon"                                                    
-duration = "30m"
-sorting = "descending"
-apply-shadow = true
-
+# Usage
+Run the script with the venv python path (using defaults):
+```
+path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py
 ```
 
-run script in command line or bind keys in your DE/WM.
+## Options
+--collections (string: default is "1053828")
+An unsplash collection ID
 
-### ~Adding more monitors~ CONTENT BELOW TAKEN OUT MOMENTARILY
+--waylandsetter (string: default is "wpaperd")
+valid options are "swaybg" or "wpaperd"
 
-1. Create a folder for the extra monitor inside `~/Pictures/Wallpapers`, here called `your_extra_monitor` for example
-2. Add the folder name to the variable MONITORS_FOLDER (e.g. `MONITORS_FOLDER = ("rightmon","leftmon","your_extra_monitor")`)
-3. Add an entry to the `wallpaper.toml file`. 
-
+## Example
+Set wallpaper with swaybg from unsplash collection "4819574"
 ```
-[YOU_EXTRA_MONITOR_ID]
-path = "/home/your_user_name/Pictures/Wallpapers/your_extra_monitor"                                                    
-duration = "30m"
-sorting = "descending"
-apply-shadow = true
+path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py --collection "4819574" --waylandsetter "swaybg"
 ```
+
+

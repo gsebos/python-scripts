@@ -8,7 +8,6 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--collections",type=str, default="1053828")
-# parser.add_argument("--mode",type=int,default=2)
 parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
 args = parser.parse_args()
 
@@ -45,6 +44,14 @@ class WallpaperManager:
                 self._MONITORS_FOLDERS.append(f"{self.WALLPAPER_PATH}/{dir}")
         return self._MONITORS_FOLDERS
 
+    @classmethod
+    def is_session_wayland(cls):
+        session_type = os.environ['XDG_SESSION_TYPE']
+        if session_type == "wayland":
+            return True
+        else:
+            return False
+
     def create_folders(self):
             for i in range(self.num_monitors):
                 if not os.path.exists(f"{self.WALLPAPER_PATH}/uws_mon{i}"):
@@ -56,12 +63,6 @@ class WallpaperManager:
                 apikey=line
         return apikey.rstrip()
 
-    def is_session_wayland(self):
-        session_type = os.environ['XDG_SESSION_TYPE']
-        if session_type == "wayland":
-            return True
-        else:
-            return False
 
     def download_wallpapers_from_unsplash(self):
         wallpapers = []
@@ -113,7 +114,7 @@ class wpaperdConfig:
         return self.config
 
     def save_config(self):
-        if os.path.exists(self.CONFIG_PATH):
+        if os.path.exists(self.CONFIG_PATH) and WallpaperManager.is_session_wayland():
             with open(self.CONFIG_PATH,'w') as f:
                     f.writelines(self.create_config())
         

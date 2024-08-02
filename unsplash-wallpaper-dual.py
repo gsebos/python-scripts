@@ -5,6 +5,7 @@ import json
 import subprocess
 import os
 import argparse
+import shutil
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--collections",type=str, default="1053828")
@@ -18,6 +19,7 @@ class WallpaperManager:
         self.API_KEY = self.get_api_key_from_file()
         self.BASE_URL = "https://api.unsplash.com/photos/random"
         self.WALLPAPER_PATH = f"/home/{self.USER}/Pictures/Wallpapers"
+        self.DIRS_IN_PATH = os.listdir(f"{self.WALLPAPER_PATH}")
         self.num_monitors = len(self.monitors)
         self.COLLECTIONS = collections
         self.UNSPLASH_PARAMS = {
@@ -27,6 +29,13 @@ class WallpaperManager:
         self.create_folders()
         self.download_wallpapers_from_unsplash()
     
+    # Check if a folder was created by this app
+    def is_app_folder(self, dir):
+        if os.path.isdir(f"{self.WALLPAPER_PATH}/{dir}") and dir.startswith("uws_mon"):
+            return True
+        else:
+            return False
+        
     @property
     def monitors(self):
         self._monitors = []
@@ -37,10 +46,9 @@ class WallpaperManager:
 
     @property 
     def MONITORS_FOLDER(self):
-        dirs = os.listdir(f"{self.WALLPAPER_PATH}")
-        self._MONITORS_FOLDERS = []
-        for dir in dirs:
-            if os.path.isdir(f"{self.WALLPAPER_PATH}/{dir}") and dir.startswith("uws_mon"):
+        self._MONITORS_FOLDERS = []      
+        for dir in self.DIRS_IN_PATH:
+            if self.is_app_folder(dir):
                 self._MONITORS_FOLDERS.append(f"{self.WALLPAPER_PATH}/{dir}")
         return self._MONITORS_FOLDERS
 
@@ -52,7 +60,13 @@ class WallpaperManager:
         else:
             return False
 
+
     def create_folders(self):
+            # remove existing folders in case number of screen has changed 
+            for dir in self.DIRS_IN_PATH:
+                if self.is_app_folder(dir):
+                    shutil.rmtree(f"{self.WALLPAPER_PATH}/{dir}")  
+            # Then create new folders
             for i in range(self.num_monitors):
                 if not os.path.exists(f"{self.WALLPAPER_PATH}/uws_mon{i}"):
                     os.makedirs(f"{self.WALLPAPER_PATH}/uws_mon{i}")

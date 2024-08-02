@@ -27,9 +27,9 @@ else:
     white=""
 
 if args.icons:
-    icons = ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󱟢"]
+    icons = ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󱟢","󰂄"]
 else:
-    icons = ["","","","","","","","","",""]
+    icons = ["","","","","","","","","","",""]
 
 icons_colors = [
     red+icons[0],
@@ -64,7 +64,7 @@ for bat in batteries:
         if bat["status"] == "Discharging" or bat["status"] == "Not charging":
             icon = icons_colors[int(bat['perc']/10)]
         else:
-            icon = f"{white}󰂄"
+            icon = f"{white}{icons[10]}"
         batinfo.append(f"{icon} {bat['name']}:{bat['perc']}%")
 
 print(" ".join(batinfo))

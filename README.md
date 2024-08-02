@@ -47,3 +47,7 @@ Set wallpaper using wpaperd (in wayland or uses feh in X11) and default collecti
 ```
 path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py 
 ```
+
+# Battery level script
+
+A simple script for dispaying battery levels. This uses 2dstatus color codes and nerd fonts to output battery icons.

@@ -26,11 +26,14 @@ else:
     red=""
     white=""
 
+# icon at index 10 is used when the battery is charging
 if args.icons:
     icons = ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󱟢","󰂄"]
 else:
     icons = ["","","","","","","","","","",""]
 
+# icons[10] is not included in icons_colors on purpose because
+# icons_colors needs to be 10 long (see icon picking formula below)
 icons_colors = [
     red+icons[0],
     red+icons[1],
@@ -48,24 +51,37 @@ def cleanup_output(raw_output):
     clean_output = raw_output.replace("b","").replace("\\n","").replace("'","")
     return clean_output
 
-batteries = []
-for file in os.listdir('/sys/class/hwmon/'):
-    dev_name = cleanup_output(str(subprocess.check_output(f"cat /sys/class/hwmon/{file}/name", shell=True)))
-    if "BAT" in dev_name:
-        bat = {}
-        bat["name"]= dev_name
-        bat["status"]= cleanup_output(str(subprocess.check_output(f"cat /sys/class/hwmon/{file}/device/status", shell=True)))
-        bat["full"]=int(subprocess.check_output(f"cat /sys/class/hwmon/{file}/device/energy_full", shell=True))
-        bat["now"]=int(subprocess.check_output(f"cat /sys/class/hwmon/{file}/device/energy_now", shell=True))
-        bat["perc"] = round((bat["now"] / bat["full"])*100)
-        batteries.append(bat)
-batinfo=[]
-for bat in batteries:
-        if bat["status"] == "Discharging" or bat["status"] == "Not charging":
-            icon = icons_colors[int(bat['perc']/10)]
-        else:
-            icon = f"{white}{icons[10]}"
-        batinfo.append(f"{icon} {bat['name']}:{bat['perc']}%")
+def get_batteries_info():
+    batteries = []
+    for file in os.listdir('/sys/class/hwmon/'):
+        dev_name = cleanup_output(str(subprocess.check_output(f"cat /sys/class/hwmon/{file}/name", shell=True)))
+        if "BAT" in dev_name:
+            bat = {}
+            bat["name"]= dev_name
+            bat["status"]= cleanup_output(str(subprocess.check_output(f"cat /sys/class/hwmon/{file}/device/status", shell=True)))
+            bat["full"]=int(subprocess.check_output(f"cat /sys/class/hwmon/{file}/device/energy_full", shell=True))
+            bat["now"]=int(subprocess.check_output(f"cat /sys/class/hwmon/{file}/device/energy_now", shell=True))
+            bat["perc"] = round((bat["now"] / bat["full"])*100)
+            batteries.append(bat)
+    return batteries
 
-print(" ".join(batinfo))
-# print(batteries[0]["status"])
+def create_output(batteries_info):
+    output=[]
+    for bat in batteries_info:
+            if bat["status"] == "Discharging" or bat["status"] == "Not charging":
+                # icon picking formula
+                icon = icons_colors[int(bat['perc']/10)]
+            else:
+                icon = f"{white}{icons[10]}"
+            output.append(f"{icon} {bat['name']}:{bat['perc']}%")
+    return " ".join(output)
+
+def main():
+    batteries_info = get_batteries_info()
+    output = create_output(batteries_info)
+
+    print(output)
+
+
+if __name__ == "__main__":
+    main()

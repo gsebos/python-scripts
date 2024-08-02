@@ -7,8 +7,12 @@ import os
 import argparse
 import shutil
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--collections",type=str, default="1053828")
+parser = argparse.ArgumentParser(
+    prog="Random Unsplash Wallpaper",
+    description="Uses the unsplash API to fetch a random image and set it as wallpaper using feh (X11) or a choice of wpaperd(default) or swaybg in wayland",
+    epilog="Dependencies: feh, xrandr, wpaperd or swaybg, pip requests"
+)
+parser.add_argument("--collections",type=str, default="1053828",help="the unsplash collection id")
 parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
 args = parser.parse_args()
 

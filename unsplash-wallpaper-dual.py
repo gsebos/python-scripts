@@ -12,12 +12,12 @@ parser = argparse.ArgumentParser(
     description="Uses the unsplash API to fetch a random image and set it as wallpaper using feh (X11) or a choice of wpaperd(default) or swaybg in wayland",
     epilog="Dependencies: feh, xrandr, wpaperd or swaybg, pip requests"
 )
-parser.add_argument("--collections",type=str, default="1053828",help="the unsplash collection id")
+parser.add_argument("--collection",type=str, default="1053828",help="the unsplash collection id")
 parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
 args = parser.parse_args()
 
 class WallpaperManager:
-    def __init__(self,collections=args.collections):
+    def __init__(self,collection=args.collection):
         self.USER = os.getlogin()
         self.BASE_DIR = os.path.dirname(os.path.realpath(__file__))
         self.API_KEY = self.get_api_key_from_file()
@@ -25,10 +25,10 @@ class WallpaperManager:
         self.WALLPAPER_PATH = f"/home/{self.USER}/Pictures/Wallpapers"
         self.DIRS_IN_PATH = os.listdir(f"{self.WALLPAPER_PATH}")
         self.num_monitors = len(self.monitors)
-        self.COLLECTIONS = collections
+        self.COLLECTION = collection
         self.UNSPLASH_PARAMS = {
                 "client_id" : self.API_KEY,
-                "collections" : self.COLLECTIONS
+                "collections" : self.COLLECTION
             }
         self.create_folders()
         self.download_wallpapers_from_unsplash()

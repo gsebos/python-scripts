@@ -50,4 +50,4 @@ path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py
 
 # Battery level script
 
-A simple script for dispaying battery levels. This uses 2dstatus color codes and nerd fonts to output battery icons.
+A simple script for displaying battery levels. This uses 2dstatus color codes and nerd fonts to output battery icons. Colors and icons can be deactivated with respective arguments `--no-colors` and `--no-icons`

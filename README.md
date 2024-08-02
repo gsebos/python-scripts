@@ -9,7 +9,7 @@ A quick script to set a random unsplash picture as wallpaper for each of your mo
 
 # Installation
 1. Get an api key from [https://unsplash.com/documentation](https://unsplash.com/documentation)
-2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python_scripts folder** 
+2. Save the key in a file named `api_key.txt` **in the same folder as the scripts, i.e. inside the python-scripts folder if you have cloned the repo** 
 3. Install `swaybg` (used with option) or `wpaperd` (used by default) using your package manager
 4. Install `feh` and `xrandr` with your package manager (even if using wayland)
 5. Install the python module `requests` using `pip` [in a venv](https://docs.python.org/3/library/venv.html):
@@ -31,16 +31,23 @@ path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py
 ```
 
 ## Options
---collections (string: default is "1053828")
+--collection (string: default is "1053828")
 An unsplash collection ID
 
 --waylandsetter (string: default is "wpaperd")
 valid options are "swaybg" or "wpaperd"
 
 ## Example
-Set wallpaper with swaybg from unsplash collection "4819574"
+Set wallpaper with swaybg from unsplash collection "4819574" in wayland
 ```
 path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py --collection "4819574" --waylandsetter "swaybg"
 ```
 
+Set wallpaper using wpaperd (in wayland or uses feh in X11) and default collection (1053828)
+```
+path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py 
+```
 
+# Battery level script
+
+A simple script for dispaying battery levels. This uses 2dstatus color codes and nerd fonts to output battery icons.

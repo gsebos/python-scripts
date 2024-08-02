@@ -1,5 +1,13 @@
 import subprocess
 import os
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog="Battery levels simple script",
+    description="reads the hwmon sys files to detect batteries input and outputs battery levels"
+)
+parser.add_argument("--icons",type=bool,default=True)
+parser.add_argument("--colors",type=bool,default=False)
 
 # status2d colors
 green="^c#409960^"

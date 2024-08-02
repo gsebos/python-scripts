@@ -5,28 +5,41 @@ import json
 import subprocess
 import os
 import argparse
+import shutil
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--collections",type=str, default="1053828")
+parser = argparse.ArgumentParser(
+    prog="Random Unsplash Wallpaper",
+    description="Uses the unsplash API to fetch a random image and set it as wallpaper using feh (X11) or a choice of wpaperd(default) or swaybg in wayland",
+    epilog="Dependencies: feh, xrandr, wpaperd or swaybg, pip requests"
+)
+parser.add_argument("--collection",type=str, default="1053828",help="the unsplash collection id")
 parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
 args = parser.parse_args()
 
 class WallpaperManager:
-    def __init__(self,collections=args.collections):
+    def __init__(self,collection=args.collection):
         self.USER = os.getlogin()
         self.BASE_DIR = os.path.dirname(os.path.realpath(__file__))
         self.API_KEY = self.get_api_key_from_file()
         self.BASE_URL = "https://api.unsplash.com/photos/random"
         self.WALLPAPER_PATH = f"/home/{self.USER}/Pictures/Wallpapers"
+        self.DIRS_IN_PATH = os.listdir(f"{self.WALLPAPER_PATH}")
         self.num_monitors = len(self.monitors)
-        self.COLLECTIONS = collections
+        self.COLLECTION = collection
         self.UNSPLASH_PARAMS = {
                 "client_id" : self.API_KEY,
-                "collections" : self.COLLECTIONS
+                "collections" : self.COLLECTION
             }
         self.create_folders()
         self.download_wallpapers_from_unsplash()
     
+    # Check if a folder was created by this app
+    def is_app_folder(self, dir):
+        if os.path.isdir(f"{self.WALLPAPER_PATH}/{dir}") and dir.startswith("uws_mon"):
+            return True
+        else:
+            return False
+        
     @property
     def monitors(self):
         self._monitors = []
@@ -37,10 +50,9 @@ class WallpaperManager:
 
     @property 
     def MONITORS_FOLDER(self):
-        dirs = os.listdir(f"{self.WALLPAPER_PATH}")
-        self._MONITORS_FOLDERS = []
-        for dir in dirs:
-            if os.path.isdir(f"{self.WALLPAPER_PATH}/{dir}") and dir.startswith("uws_mon"):
+        self._MONITORS_FOLDERS = []      
+        for dir in self.DIRS_IN_PATH:
+            if self.is_app_folder(dir):
                 self._MONITORS_FOLDERS.append(f"{self.WALLPAPER_PATH}/{dir}")
         return self._MONITORS_FOLDERS
 
@@ -52,7 +64,13 @@ class WallpaperManager:
         else:
             return False
 
+
     def create_folders(self):
+            # remove existing folders in case number of screen has changed 
+            for dir in self.DIRS_IN_PATH:
+                if self.is_app_folder(dir):
+                    shutil.rmtree(f"{self.WALLPAPER_PATH}/{dir}")  
+            # Then create new folders
             for i in range(self.num_monitors):
                 if not os.path.exists(f"{self.WALLPAPER_PATH}/uws_mon{i}"):
                     os.makedirs(f"{self.WALLPAPER_PATH}/uws_mon{i}")

@@ -1,6 +1,7 @@
 import subprocess
 import os
 
+# status2d colors
 green="^c#409960^"
 amber="^c#998240^"
 red="^c#ba1818^"

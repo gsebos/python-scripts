@@ -7,17 +7,8 @@ import os
 import argparse
 import shutil
 
-parser = argparse.ArgumentParser(
-    prog="Random Unsplash Wallpaper",
-    description="Uses the unsplash API to fetch a random image and set it as wallpaper using feh (X11) or a choice of wpaperd(default) or swaybg in wayland",
-    epilog="Dependencies: feh, xrandr, wpaperd or swaybg, pip requests"
-)
-parser.add_argument("--collection",type=str, default="1053828",help="the unsplash collection id")
-parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
-args = parser.parse_args()
-
 class WallpaperManager:
-    def __init__(self,collection=args.collection):
+    def __init__(self,collection):
         self.USER = os.getlogin()
         self.BASE_DIR = os.path.dirname(os.path.realpath(__file__))
         self.API_KEY = self.get_api_key_from_file()
@@ -138,8 +129,16 @@ class wpaperdConfig:
         
 
 def main():
-    manager = WallpaperManager()
+    parser = argparse.ArgumentParser(
+    prog="Random Unsplash Wallpaper",
+    description="Uses the unsplash API to fetch a random image and set it as wallpaper using feh (X11) or a choice of wpaperd(default) or swaybg in wayland",
+    epilog="Dependencies: feh, xrandr, wpaperd or swaybg, pip requests"
+)
+    parser.add_argument("--collection",type=str, default="1053828",help="the unsplash collection id")
+    parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
+    args = parser.parse_args()
 
+    manager = WallpaperManager(args.collection)
     # create config for wpaperd use
     config = wpaperdConfig(manager.MONITORS_FOLDER,manager.monitors)
 

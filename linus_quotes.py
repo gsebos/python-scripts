@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import random
 import tkinter as tk
+from tkinter import ttk
 import argparse
 
 class Quote:
@@ -13,7 +14,7 @@ class Quote:
             self.title = self.root.title("linus_quotes")
             self.root.wait_visibility(self.root)
             self.root.attributes("-alpha", 0.9)
-            self.label = tk.Label(self.root,text=self.get_rand_quote(),wraplength=500,justify="left",font=("JetBrainsMonoNL NFP SemiBold",12))
+            self.label = ttk.Label(self.root,text=self.get_rand_quote(),wraplength=500,justify="left",font=("JetBrainsMonoNL NFP SemiBold",12))
             self.label.pack(padx=50,pady=50)
             self.root.after(15000,self.update_quote)
             self.root.mainloop()

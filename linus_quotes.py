@@ -39,13 +39,10 @@ class Quote:
         else:
             print(quote_text)
 
-
     def update_quote(self):
         quote_text = self.get_rand_quote()
         self.label.config(text=str(quote_text))
         self.root.after(15000, self.update_quote)  
-
-
 
 def main():
     parser = argparse.ArgumentParser()

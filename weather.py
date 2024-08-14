@@ -19,7 +19,6 @@ def get_weather_json(api_key:str,location:str,weather_now:bool):
         url =f"https://dataservice.accuweather.com/forecasts/v1/hourly/1hour/{location}?apikey={api_key}" 
     response = requests.get(url)
     json = response.json()
-    print(json)
     return json
 
 

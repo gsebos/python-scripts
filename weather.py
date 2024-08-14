@@ -19,12 +19,26 @@ def get_weather_json(api_key:str,location:str,weather_now:bool):
         url =f"https://dataservice.accuweather.com/forecasts/v1/hourly/1hour/{location}?apikey={api_key}" 
     response = requests.get(url)
     json = response.json()
-    print(json)
     return json
 
 
 def make_widget(json,now):
-    icons = [ "" , "" , "" , "" , "" , "" , "" , "󰅟" , "" , "" , "" , "" , "" , "" , "" , "󰼶" , "󰼴" , "󰼴" , "󰼶" , "" , "󰼴" ]
+    icons =         [ "" , "" , "" , "" , "" , "" , "" , "󰅟" , "" , "" , "" , "" , "" , "" , "" , "󰼶" , "󰼴" , "󰼴" , "󰼶" , "" , "󰼴" ]
+    icons_night =   { 
+        "33" : "󰖔" ,
+        "34" :"󰼱" , 
+        "35" :"" , 
+        "36" :"" , 
+        "37" :"" , 
+        "38" :"󰼱" , 
+        "39" :"" , 
+        "40" :"" , 
+        "41" :"" , 
+        "42" :"" , 
+        "43" :"" , 
+        "44" :"" 
+    }
+
     for line in json:
         if now:
             tempC = line['Temperature']['Metric']['Value']
@@ -32,9 +46,18 @@ def make_widget(json,now):
             # The next hour forecast json object only provides temps in Fahrenheit
             # Fahrenheit to Celcius formula C = 5/9 x (F-32)
             tempC = round(5/9 * (line['Temperature']['Value']-32),1)
+        if line['IsDaylight']:
+            try:
+                output = f"{tempC}C {icons[line['WeatherIcon'] - 1]}"
+            except:
+                output = f"{tempC}C {line['IconPhrase']}"
+        else:
+            try:
+                output = f"{tempC}C {icons_night[str(line['WeatherIcon'])]}"
+            except:
+                output = f"{tempC}C {line['IconPhrase']}"
 
-        output = f"{tempC}C {icons[line['WeatherIcon'] - 1]}"
-        return output
+    return output
 
 def main():
     parser = argparse.ArgumentParser(description="Gets the next hour forecast (default) or the current forecast")

@@ -27,7 +27,7 @@ pip install requests
 # Usage
 Run the script with the venv python path (using defaults):
 ```
-path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py
+path/to/script/folder/venv/bin/python randomunsplash.py
 ```
 
 ## Options
@@ -40,12 +40,12 @@ valid options are "swaybg" or "wpaperd"
 ## Example
 Set wallpaper with swaybg from unsplash collection "4819574" in wayland
 ```
-path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py --collection "4819574" --waylandsetter "swaybg"
+path/to/script/folder/venv/bin/python randomunsplash.py --collection "4819574" --waylandsetter "swaybg"
 ```
 
 Set wallpaper using wpaperd (in wayland or uses feh in X11) and default collection (1053828)
 ```
-path/to/script/folder/venv/bin/python unsplash-wallpaper-dual.py 
+path/to/script/folder/venv/bin/python randomunsplash.py 
 ```
 
 # Battery level script

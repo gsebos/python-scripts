@@ -153,7 +153,7 @@ def main():
     
 
 
-    # Set wallpaper
+    # Set wallpaper test
     manager.set_wallpapers()
 
 if __name__ == "__main__":

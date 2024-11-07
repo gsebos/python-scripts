@@ -8,7 +8,7 @@ import argparse
 import shutil
 
 class WallpaperManager:
-    def __init__(self,collection):
+    def __init__(self,collection,waylandsetter):
         self.USER = os.getlogin()
         self.BASE_DIR = os.path.dirname(os.path.realpath(__file__))
         self.API_KEY = self.get_api_key_from_file()
@@ -17,6 +17,7 @@ class WallpaperManager:
         self.DIRS_IN_PATH = os.listdir(f"{self.WALLPAPER_PATH}")
         self.num_monitors = len(self.monitors)
         self.COLLECTION = collection
+        self.WAYLANDSETTER = waylandsetter
         self.UNSPLASH_PARAMS = {
                 "client_id" : self.API_KEY,
                 "collections" : self.COLLECTION
@@ -96,11 +97,11 @@ class WallpaperManager:
 
         if self.is_session_wayland():
             settercmd = []
-            if args.waylandsetter == "swaybg":
-                settercmd = [args.waylandsetter,"-i",f"{mon}/wallpaper.jpg"]
+            if self.WAYLANDSETTER == "swaybg":
+                settercmd = [self.WAYLANDSETTER,"-i",f"{mon}/wallpaper.jpg"]
             else:
-                settercmd = [args.waylandsetter]  
-            subprocess.run(["pkill",args.waylandsetter])
+                settercmd = [self.WAYLANDSETTER]  
+            subprocess.run(["pkill",self.WAYLANDSETTER])
             subprocess.run([*settercmd])
         else:
             subprocess.run(["pkill","feh"])
@@ -108,7 +109,7 @@ class WallpaperManager:
 
 class wpaperdConfig:
     def __init__(self,wallpaper_dirs_path,monitors):
-        self.CONFIG_PATH = f"/home/{os.getlogin()}/.config/wpaperd/wallpaper.toml"
+        self.CONFIG_PATH = f"/home/{os.getlogin()}/.config/wpaperd/"
         self.wallpaper_dirs_path = wallpaper_dirs_path
         self.monitors = monitors
         self.create_config()
@@ -124,7 +125,7 @@ class wpaperdConfig:
 
     def save_config(self):
         if os.path.exists(self.CONFIG_PATH) and WallpaperManager.is_session_wayland():
-            with open(self.CONFIG_PATH,'w') as f:
+            with open(f"{self.CONFIG_PATH}wallpaper.toml",'w') as f:
                     f.writelines(self.create_config())
         
 
@@ -138,16 +139,19 @@ def main():
     parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
     args = parser.parse_args()
 
-    manager = WallpaperManager(args.collection)
+    manager = WallpaperManager(args.collection, args.waylandsetter)
     # create config for wpaperd use
-    config = wpaperdConfig(manager.MONITORS_FOLDER,manager.monitors)
 
-    # output to terminal for debugging
+    config = wpaperdConfig(manager.MONITORS_FOLDER,manager.monitors)
     print(f"wrote config file:\n {config.config}")
-    print(f"num monitors: {manager.num_monitors}")
     
     # Saves .config/wpaperd/wallpaper.toml with detected monitors
     config.save_config()
+    
+    # output to terminal for debugging
+    print(f"num monitors: {manager.num_monitors}")
+    
+
 
     # Set wallpaper
     manager.set_wallpapers()

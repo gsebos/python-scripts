@@ -109,7 +109,7 @@ class WallpaperManager:
 
 class wpaperdConfig:
     def __init__(self,wallpaper_dirs_path,monitors):
-        self.CONFIG_PATH = f"/home/{os.getlogin()}/.config/wpaperd/wallpaper.toml"
+        self.CONFIG_PATH = f"/home/{os.getlogin()}/.config/wpaperd/"
         self.wallpaper_dirs_path = wallpaper_dirs_path
         self.monitors = monitors
         self.create_config()
@@ -125,7 +125,7 @@ class wpaperdConfig:
 
     def save_config(self):
         if os.path.exists(self.CONFIG_PATH) and WallpaperManager.is_session_wayland():
-            with open(self.CONFIG_PATH,'w') as f:
+            with open(f"{self.CONFIG_PATH}wallpaper.toml",'w') as f:
                     f.writelines(self.create_config())
         
 
@@ -141,16 +141,19 @@ def main():
 
     manager = WallpaperManager(args.collection, args.waylandsetter)
     # create config for wpaperd use
-    config = wpaperdConfig(manager.MONITORS_FOLDER,manager.monitors)
 
-    # output to terminal for debugging
+    config = wpaperdConfig(manager.MONITORS_FOLDER,manager.monitors)
     print(f"wrote config file:\n {config.config}")
-    print(f"num monitors: {manager.num_monitors}")
     
     # Saves .config/wpaperd/wallpaper.toml with detected monitors
     config.save_config()
+    
+    # output to terminal for debugging
+    print(f"num monitors: {manager.num_monitors}")
+    
 
-    # Set wallpaper
+
+    # Set wallpaper test
     manager.set_wallpapers()
 
 if __name__ == "__main__":

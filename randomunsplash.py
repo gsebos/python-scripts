@@ -8,7 +8,7 @@ import argparse
 import shutil
 
 class WallpaperManager:
-    def __init__(self,collection):
+    def __init__(self,collection,wallpaper_setter):
         self.USER = os.getlogin()
         self.BASE_DIR = os.path.dirname(os.path.realpath(__file__))
         self.API_KEY = self.get_api_key_from_file()
@@ -17,6 +17,7 @@ class WallpaperManager:
         self.DIRS_IN_PATH = os.listdir(f"{self.WALLPAPER_PATH}")
         self.num_monitors = len(self.monitors)
         self.COLLECTION = collection
+        self.SETTER = wallpaper_setter
         self.UNSPLASH_PARAMS = {
                 "client_id" : self.API_KEY,
                 "collections" : self.COLLECTION
@@ -96,11 +97,11 @@ class WallpaperManager:
 
         if self.is_session_wayland():
             settercmd = []
-            if args.waylandsetter == "swaybg":
-                settercmd = [args.waylandsetter,"-i",f"{mon}/wallpaper.jpg"]
+            if self.SETTER == "swaybg":
+                settercmd = [self.SETTER,"-i",f"{mon}/wallpaper.jpg"]
             else:
-                settercmd = [args.waylandsetter]  
-            subprocess.run(["pkill",args.waylandsetter])
+                settercmd = [self.SETTER]  
+            subprocess.run(["pkill",self.SETTER])
             subprocess.run([*settercmd])
         else:
             subprocess.run(["pkill","feh"])
@@ -138,7 +139,7 @@ def main():
     parser.add_argument("--waylandsetter",choices=["swaybg","wpaperd"],default="wpaperd")
     args = parser.parse_args()
 
-    manager = WallpaperManager(args.collection)
+    manager = WallpaperManager(args.collection, args.waylandsetter)
     # create config for wpaperd use
     config = wpaperdConfig(manager.MONITORS_FOLDER,manager.monitors)
 

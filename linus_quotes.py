@@ -13,7 +13,7 @@ class Quote:
             self.root = tk.Tk()
             self.title = self.root.title("linus_quotes")
             self.root.wait_visibility(self.root)
-            self.root.attributes("-alpha", 0.9)
+            self.root.attributes("-alpha", 0.7)
             self.root.configure(bg = '#181A1B')
             self.label = ttk.Label(self.root,text=self.get_rand_quote(),wraplength=500,justify="left",font=("JetBrainsMonoNL NFP SemiBold",12),background="#181A1B",foreground="#F1F1F1")
             self.label.pack(padx=50,pady=50)
@@ -55,6 +55,5 @@ def main():
 
     programme = Quote(gui)
     
-
 if __name__ == "__main__":
     main()

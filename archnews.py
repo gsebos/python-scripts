@@ -20,3 +20,6 @@ if response.status_code == 200:
     print("read more at https://archlinux.org/")
 else:
     print(f"Error, response status code {response.status_code}")
+
+
+

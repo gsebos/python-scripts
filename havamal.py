@@ -29,6 +29,8 @@ def get_from_website(URL):
         soup = BeautifulSoup(html,features="html.parser")
         poems = soup.find_all('p',class_='grommetux-paragraph grommetux-paragraph--large grommetux-paragraph--margin-medium')
 
+        # Save code here optionally
+
         for line in random.choice(poems):
             poem_string += (line.text + "\n")
 
@@ -61,7 +63,7 @@ if __name__ == "__main__":
     main()
 
 
-### Learning Notes
+### Notes
 
         # Save as html
         

@@ -61,6 +61,8 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun):
 
     if dryrun:
         print("[WARNING] This was a dry run, no back up was completed! Add the --live flag to backup")
+        print(f"[INFO] Source would be {SOURCE}")
+        print(f"[INFO] destination would be {BACKUP_PARENT + save_folder}")
     else:
         print(f"[INFO] Backup completed at {BACKUP_PARENT + save_folder}")
 

@@ -66,14 +66,14 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun):
 
 def main():
     parser = argparse.ArgumentParser(
-    prog="simple python rsync backup",
-    description="a simple programme to create backups at your chosen location"
+    prog="python backup.py",
+    description="a simple programme to create backups using rsync"
     )
     
-    parser.add_argument("--maxbackups", type = int , default = 5)
-    parser.add_argument("--source", type = str , default = "/home/seb/")
-    parser.add_argument("--dest", type = str , default = "/mnt/casita-share/pc_backups/")
-    parser.add_argument("--live",action='store_true')
+    parser.add_argument("--maxbackups", type = int , default = 5, help="when limit is reached, oldest foler is overwritten")
+    parser.add_argument("--source", type = str , default = "/home/seb/",help="default is /home/seb/")
+    parser.add_argument("--dest", type = str , default = "/mnt/casita-share/pc_backups/", help="default is /mnt/casita-share/pc_backups/")
+    parser.add_argument("--live",action='store_true', help="if not present rsync runs in dry run mode")
     args = parser.parse_args()
 
     MAX_NUM_BACKUPS = args.maxbackups
@@ -83,10 +83,19 @@ def main():
 
     todays_date = date.today().strftime("%Y-%m-%d")
 
-    if not os.path.isdir(BACKUP_PARENT):
-       print(f"[WARNING] Backup path does not exist please create or mount a backup folder at {BACKUP_PARENT}")
-       exit()
+    errors = []
 
+    if not os.path.isdir(BACKUP_PARENT):
+       errors.append(f"[WARNING] Backup containing folder path {BACKUP_PARENT} does not exist, define it with the --dest flag")
+       
+    if not os.path.isdir(SOURCE):
+        errors.append(f"[WARNING] Backup source path {SOURCE} does not exist, define it with the --source flag")
+    
+    if errors:
+        for error in errors:
+            print(error)
+        exit()
+    
     do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date,dryrun)
 
     

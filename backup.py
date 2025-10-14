@@ -16,10 +16,12 @@ def get_newest_or_oldest_folder(BACKUP_PARENT, mode, PREFIX):
 
     return backup_folders[0], backup_folders
 
-def build_cmd(FLAGS, dryrun, SOURCE, save_folder):
+def build_cmd(FLAGS, dryrun, SOURCE, save_path, silent):
     flags = FLAGS.split(' ')
-
-    cmd = ['rsync', "-av", "--progress" ,"--dry-run" if dryrun else "",SOURCE, save_folder]
+    option = "-a" if silent else "-av"
+    
+    cmd = ['rsync', "--progress" ,"--dry-run" if dryrun else "",SOURCE, save_path]
+    cmd.insert(1,option)
     cmd[4:4] = flags
 
     # remove any empty argument 
@@ -52,21 +54,14 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date, command ,PREFIX
         result = subprocess.run(command)
     
     print(f"exit code: {result.returncode}")  # exit code 
-
-    if dryrun:
-        print("[WARNING] This was a dry run, no back up was completed! Add the --live flag to backup")
-        print(f"[INFO] Source would be {SOURCE}")
-        print(f"[INFO] destination would be {os.path.join(BACKUP_PARENT , save_folder)}")
-    else:
-        print(f"[INFO] Backup completed at {os.path.join(BACKUP_PARENT , save_folder)}")
+    print(f"[INFO] Backup completed at {os.path.join(BACKUP_PARENT, save_folder)}")
 
 def main():
+    user = getpass.getuser()
     parser = argparse.ArgumentParser(
     prog="python backup.py",
     description="a simple programme to create backups using rsync"
     )
-
-    user = getpass.getuser()
 
     parser.add_argument("--maxbackups", type = int , default = 5, help="when limit is reached, oldest foler is overwritten")
     parser.add_argument("--source", type = str , default = f"/home/{user}/",help=f"default is /home/{user}/")
@@ -74,6 +69,7 @@ def main():
     parser.add_argument("--prefix", type = str , default = "pyrsync-backup",help="default is pyrsync-backup")
     parser.add_argument("--dest", type = str , default = "/mnt/casita-share/pc_backups/", help="default is /mnt/casita-share/pc_backups/")
     parser.add_argument("--live",action='store_true', help="if not present rsync runs in dry run mode")
+    parser.add_argument("--silent",action='store_true', help="no -v flag")
     args = parser.parse_args()
 
     MAX_NUM_BACKUPS = args.maxbackups
@@ -82,8 +78,12 @@ def main():
     PREFIX = args.prefix
     dryrun = not args.live
     flags = args.flags
+    silent = args.silent
 
     todays_date = date.today().strftime("%Y-%m-%d")
+
+    save_folder = PREFIX + '_' + todays_date
+    save_path = os.path.join(BACKUP_PARENT, save_folder)
 
     errors = []
 
@@ -98,20 +98,24 @@ def main():
             print(error)
         exit()
 
-    command = build_cmd(flags,dryrun, SOURCE, os.path.join(BACKUP_PARENT, PREFIX + '_' + todays_date))
+    command = build_cmd(flags,dryrun, SOURCE, save_path, silent)
 
     print()
     print(f"[INFO] rsync command: {command[1]}")
     print()
 
-    confirm = input(f"You are about to back up the content of {SOURCE} into {os.path.join(BACKUP_PARENT, PREFIX + '_' + todays_date)} (type yes to confirm)")
+    confirm = input(f"You are about to back up the content of {SOURCE} into {save_path} (type yes to confirm)")
 
-    if confirm == "yes".lower():
-        do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date,dryrun, command[0],PREFIX)
-    else:
+    if not confirm == "yes".lower():
         print("backup aborted")
         exit()
-   
+
+    do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date, command[0],PREFIX)
+        
+    if dryrun:
+        print("[WARNING] This was a dry run, no back up was completed! Add the --live flag to backup")
+        print(f"[INFO] Source would be {SOURCE}")
+        print(f"[INFO] destination would be {save_path}")       
     
 if __name__ == "__main__":
     main()

@@ -16,32 +16,23 @@ def get_newest_or_oldest_folder(BACKUP_PARENT, mode, PREFIX):
 
     return backup_folders[0], backup_folders
 
-def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX):
+def build_cmd(FLAGS, dryrun, SOURCE, save_folder):
+    flags = FLAGS.split(' ')
+
+    cmd = ['rsync', "-av", "--progress" ,"--dry-run" if dryrun else "",SOURCE, save_folder]
+    cmd[4:4] = flags
+
+    # remove any empty argument 
+    cmd = [arg for arg in cmd if arg]
+
+    return cmd, ' '.join(cmd)
+
+
+def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date, command ,PREFIX):
     # make sure the backup folder exists, if not create it)
     save_folder = f"{PREFIX}_{todays_date}"
     if not save_folder in os.listdir(BACKUP_PARENT):
         os.mkdir(os.path.join(BACKUP_PARENT, save_folder)) 
-
-    # edit flags and exclude rules here
-    cmd = [
-        "rsync",
-        "-av", 
-        "--dry-run" if dryrun else "",
-        "--progress", 
-        "--delete", 
-        "--delete-excluded", 
-        "--include", ".cache/",
-        "--include", ".cache/mozilla/***",
-        "--exclude", "Games/***",
-        "--exclude", ".cache/***", 
-        "--exclude", ".steam/***",
-        "--exclude", "Zomboid/***", 
-        "--exclude", ".local/share/Steam/***", 
-        SOURCE, 
-        os.path.join(BACKUP_PARENT , save_folder)
-        ]
-    # remove any empty argument 
-    cmd = [arg for arg in cmd if arg]
 
     print(f"######### back up {todays_date} #########" )
 
@@ -54,11 +45,11 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX):
         shutil.rmtree(os.path.join(BACKUP_PARENT , oldest_folder))
         print(f"path removed {os.path.join(BACKUP_PARENT , oldest_folder)}")
         # then backup  
-        result = subprocess.run(cmd)
+        result = subprocess.run(command)
 
     else:
         # just backup
-        result = subprocess.run(cmd)
+        result = subprocess.run(command)
     
     print(f"exit code: {result.returncode}")  # exit code 
 
@@ -79,7 +70,8 @@ def main():
 
     parser.add_argument("--maxbackups", type = int , default = 5, help="when limit is reached, oldest foler is overwritten")
     parser.add_argument("--source", type = str , default = f"/home/{user}/",help=f"default is /home/{user}/")
-    parser.add_argument("--prefix", type = str , default = "pyrsync-backup",help="default is backup")
+    parser.add_argument("--flags", type = str , default = "--delete --delete-excluded --include .cache/ --include .cache/mozilla/*** --exclude Games/*** --exclude .cache/*** --exclude .steam/*** --exclude Zomboid/*** --exclude .local/share/Steam/***",help="flags space separated")
+    parser.add_argument("--prefix", type = str , default = "pyrsync-backup",help="default is pyrsync-backup")
     parser.add_argument("--dest", type = str , default = "/mnt/casita-share/pc_backups/", help="default is /mnt/casita-share/pc_backups/")
     parser.add_argument("--live",action='store_true', help="if not present rsync runs in dry run mode")
     args = parser.parse_args()
@@ -89,6 +81,7 @@ def main():
     SOURCE = os.path.join(args.source,'')
     PREFIX = args.prefix
     dryrun = not args.live
+    flags = args.flags
 
     todays_date = date.today().strftime("%Y-%m-%d")
 
@@ -105,12 +98,18 @@ def main():
             print(error)
         exit()
 
-    confirm = input(f"you are about to back up the content of {SOURCE} into {os.path.join(BACKUP_PARENT, PREFIX + '_' + todays_date)} (type yes to confirm)")
+    command = build_cmd(flags,dryrun, SOURCE, os.path.join(BACKUP_PARENT, PREFIX + '_' + todays_date))
+
+    print()
+    print(f"[INFO] rsync command: {command[1]}")
+    print()
+
+    confirm = input(f"You are about to back up the content of {SOURCE} into {os.path.join(BACKUP_PARENT, PREFIX + '_' + todays_date)} (type yes to confirm)")
 
     if confirm == "yes".lower():
-        do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX)
+        do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date,dryrun, command[0],PREFIX)
     else:
-        print("aborting backup")
+        print("backup aborted")
         exit()
    
     

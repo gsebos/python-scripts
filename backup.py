@@ -3,6 +3,7 @@ import subprocess
 from datetime import date
 import shutil
 import argparse
+import getpass
 
 def get_newest_or_oldest_folder(BACKUP_PARENT, mode, PREFIX):
     if mode not in ("newest","oldest"):
@@ -11,15 +12,15 @@ def get_newest_or_oldest_folder(BACKUP_PARENT, mode, PREFIX):
     folders = os.listdir(path = BACKUP_PARENT)
     folders.sort(reverse = (mode == "newest"))
 
-    backup_folders = [ folder for folder in folders if os.path.isdir( BACKUP_PARENT + folder) and folder.startswith(PREFIX) ]
+    backup_folders = [ folder for folder in folders if os.path.isdir( os.path.join(BACKUP_PARENT, folder)) and folder.startswith(PREFIX) ]
 
     return backup_folders[0], backup_folders
 
 def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX):
-    # make sure the backup folder exists, if not create it
+    # make sure the backup folder exists, if not create it)
     save_folder = f"{PREFIX}_{todays_date}"
     if not save_folder in os.listdir(BACKUP_PARENT):
-        os.mkdir(BACKUP_PARENT + save_folder) 
+        os.mkdir(os.path.join(BACKUP_PARENT, save_folder)) 
 
     # edit flags and exclude rules here
     cmd = [
@@ -37,7 +38,7 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX):
         "--exclude", "Zomboid/***", 
         "--exclude", ".local/share/Steam/***", 
         SOURCE, 
-        BACKUP_PARENT + save_folder
+        os.path.join(BACKUP_PARENT , save_folder)
         ]
     # remove any empty argument 
     cmd = [arg for arg in cmd if arg]
@@ -50,8 +51,8 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX):
     if len(folders) > MAX_NUM_BACKUPS:
         # first delete the oldest backup
         print(f"Folder for deletion: {oldest_folder}")
-        shutil.rmtree(BACKUP_PARENT + oldest_folder)
-        print(f"path removed {BACKUP_PARENT + oldest_folder}")
+        shutil.rmtree(os.path.join(BACKUP_PARENT , oldest_folder))
+        print(f"path removed {os.path.join(BACKUP_PARENT , oldest_folder)}")
         # then backup  
         result = subprocess.run(cmd)
 
@@ -64,26 +65,28 @@ def do_backup(BACKUP_PARENT,SOURCE, MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX):
     if dryrun:
         print("[WARNING] This was a dry run, no back up was completed! Add the --live flag to backup")
         print(f"[INFO] Source would be {SOURCE}")
-        print(f"[INFO] destination would be {BACKUP_PARENT + save_folder}")
+        print(f"[INFO] destination would be {os.path.join(BACKUP_PARENT , save_folder)}")
     else:
-        print(f"[INFO] Backup completed at {BACKUP_PARENT + save_folder}")
+        print(f"[INFO] Backup completed at {os.path.join(BACKUP_PARENT , save_folder)}")
 
 def main():
     parser = argparse.ArgumentParser(
     prog="python backup.py",
     description="a simple programme to create backups using rsync"
     )
-    
+
+    user = getpass.getuser()
+
     parser.add_argument("--maxbackups", type = int , default = 5, help="when limit is reached, oldest foler is overwritten")
-    parser.add_argument("--source", type = str , default = "/home/seb/",help="default is /home/seb/")
-    parser.add_argument("--prefix", type = str , default = "ez-rsync-backup",help="default is backup")
+    parser.add_argument("--source", type = str , default = f"/home/{user}/",help=f"default is /home/{user}/")
+    parser.add_argument("--prefix", type = str , default = "pyrsync-backup",help="default is backup")
     parser.add_argument("--dest", type = str , default = "/mnt/casita-share/pc_backups/", help="default is /mnt/casita-share/pc_backups/")
     parser.add_argument("--live",action='store_true', help="if not present rsync runs in dry run mode")
     args = parser.parse_args()
 
     MAX_NUM_BACKUPS = args.maxbackups
     BACKUP_PARENT = args.dest
-    SOURCE = args.source
+    SOURCE = os.path.join(args.source,'')
     PREFIX = args.prefix
     dryrun = not args.live
 
@@ -101,8 +104,14 @@ def main():
         for error in errors:
             print(error)
         exit()
-    
-    do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX)
+
+    confirm = input(f"you are about to back up the content of {SOURCE} into {os.path.join(BACKUP_PARENT, PREFIX + '_' + todays_date)} (type yes to confirm)")
+
+    if confirm == "yes".lower():
+        do_backup(BACKUP_PARENT,SOURCE,MAX_NUM_BACKUPS,todays_date,dryrun, PREFIX)
+    else:
+        print("aborting backup")
+        exit()
    
     
 if __name__ == "__main__":

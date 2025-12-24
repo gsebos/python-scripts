@@ -1,6 +1,6 @@
 # Suggested setup for archnews-rss.py for daily usage
 
-![Screenshot](archupdate.png)
+![Screenshot](archupdate_screenshot.png)
 
 This simple python programme provides the latest news article from the arch wiki RSS feed as well as the latest five titles and URLs. 
 
